@@ -1,6 +1,6 @@
 # atlas-status
 
-Atlas status page — a small Next.js application that reads incident data from a
+Atlas status page — a small Next.js app that reads incident data from a
 Supabase project and renders overall status plus recent incidents.
 
 ## Pages
@@ -26,3 +26,5 @@ Supabase project and renders overall status plus recent incidents.
 
 Deployed to Vercel from this repository. `main` builds to production;
 any other branch / pull request gets a preview deployment.
+
+> Build: Next.js (framework pinned in Vercel project settings).
