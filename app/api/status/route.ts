@@ -12,8 +12,8 @@ export async function GET() {
     if (workspaces.length > 0) {
       const wsId = process.env.NEXT_PUBLIC_STATUS_WORKSPACE_ID ?? workspaces[0].id;
       const incidents = await listIncidents(wsId, 100);
-      incident_count = incidents.filter((i) => i.status !== "resolved").length;
       const open = incidents.filter((i) => i.status !== "resolved");
+      incident_count = open.length;
       const max = open.reduce((m, i) => Math.max(m, RANK[i.severity] ?? 0), 0);
       overall_status = max >= 4 ? "outage" : max >= 3 ? "degraded" : "operational";
     }
@@ -28,5 +28,8 @@ export async function GET() {
   if (process.env.OPTIONAL_DEBUG_FLAG === "true") {
     body.debug = { source: "atlas-status" };
   }
-  return Response.json(body);
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }

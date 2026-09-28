@@ -26,7 +26,7 @@ export default async function HomePage() {
       const wsId = process.env.NEXT_PUBLIC_STATUS_WORKSPACE_ID ?? workspaces[0].id;
       incidents = await listIncidents(wsId, 10);
     }
-  } catch (e) {
+  } catch {
     error = "Unable to load incident data";
   }
   const overall = overallStatus(incidents);
