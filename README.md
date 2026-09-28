@@ -1,6 +1,6 @@
 # atlas-status
 
-Atlas status page — a small Next.js app that reads incident data from a
+Atlas status page — a small Next.js application that reads incident data from a
 Supabase project and renders overall status plus recent incidents.
 
 ## Pages
