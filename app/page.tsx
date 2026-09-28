@@ -32,7 +32,7 @@ export default async function HomePage() {
   const overall = overallStatus(incidents);
   return (
     <div>
-      <h1 style={{ fontSize: 28 }}>{process.env.PUBLIC_STATUS_LABEL ?? "Atlas Status"}</h1>
+      <h1 style={{ fontSize: 28 }}>{process.env.PUBLIC_STATUS_LABEL ?? "Atlas Status v2"}</h1>
       <div
         style={{
           display: "inline-block",
