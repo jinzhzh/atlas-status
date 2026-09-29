@@ -1,4 +1,4 @@
-import { listIncidents, listWorkspaces } from "../lib/supabase";
+import { listAllIncidents, listWorkspaces } from "../lib/supabase";
 
 const RANK: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 
@@ -18,21 +18,28 @@ const STATUS_COLOR: Record<string, string> = {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  let incidents: { id: string; title: string; severity: string; status: string; started_at: string; resolved_at: string | null }[] = [];
+  let incidents: {
+    id: string;
+    workspace_id: string;
+    title: string;
+    severity: string;
+    status: string;
+    started_at: string;
+    resolved_at: string | null;
+  }[] = [];
+  let workspaceNames: Record<string, string> = {};
   let error: string | null = null;
   try {
-    const workspaces = await listWorkspaces();
-    if (workspaces.length > 0) {
-      const wsId = process.env.NEXT_PUBLIC_STATUS_WORKSPACE_ID ?? workspaces[0].id;
-      incidents = await listIncidents(wsId, 10);
-    }
+    const [workspaces, all] = await Promise.all([listWorkspaces(), listAllIncidents(100)]);
+    workspaceNames = Object.fromEntries(workspaces.map((w) => [w.id, w.name]));
+    incidents = all;
   } catch {
     error = "Unable to load incident data";
   }
   const overall = overallStatus(incidents);
   return (
     <div>
-      <h1 style={{ fontSize: 28 }}>{process.env.PUBLIC_STATUS_LABEL ?? "Atlas Status v2"}</h1>
+      <h1 style={{ fontSize: 28 }}>{process.env.PUBLIC_STATUS_LABEL ?? "Atlas Status"}</h1>
       <div
         style={{
           display: "inline-block",
@@ -46,7 +53,7 @@ export default async function HomePage() {
       >
         {overall}
       </div>
-      <h2 style={{ fontSize: 18, marginTop: 24 }}>Recent incidents</h2>
+      <h2 style={{ fontSize: 18, marginTop: 24 }}>Recent incidents (all workspaces)</h2>
       {error ? (
         <p style={{ color: "#f87171" }}>{error}</p>
       ) : incidents.length === 0 ? (
@@ -56,6 +63,18 @@ export default async function HomePage() {
           {incidents.map((i) => (
             <li key={i.id} style={{ padding: "10px 0", borderBottom: "1px solid #1e293b" }}>
               <strong>{i.title}</strong>
+              <span
+                style={{
+                  marginLeft: 8,
+                  padding: "1px 8px",
+                  borderRadius: 10,
+                  background: "#1e293b",
+                  color: "#cbd5e1",
+                  fontSize: 12,
+                }}
+              >
+                {workspaceNames[i.workspace_id] ?? "unknown"}
+              </span>
               <span style={{ color: "#94a3b8", marginLeft: 8, textTransform: "capitalize" }}>
                 {i.severity} / {i.status}
               </span>
