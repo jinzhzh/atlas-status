@@ -1,5 +1,6 @@
 export interface Incident {
   id: string;
+  workspace_id: string;
   title: string;
   severity: string;
   status: string;
@@ -27,13 +28,12 @@ async function rest(path: string, params: Record<string, string> = {}) {
 }
 
 export async function listWorkspaces(): Promise<Workspace[]> {
-  return rest("workspaces", { select: "id,name", limit: "1" });
+  return rest("workspaces", { select: "id,name", order: "created_at.asc", limit: "50" });
 }
 
-export async function listIncidents(workspaceId: string, limit = 10): Promise<Incident[]> {
+export async function listAllIncidents(limit = 100): Promise<Incident[]> {
   return rest("incidents", {
-    select: "id,title,severity,status,started_at,resolved_at",
-    workspace_id: `eq.${workspaceId}`,
+    select: "id,workspace_id,title,severity,status,started_at,resolved_at",
     order: "started_at.desc",
     limit: String(limit),
   });
